@@ -22,7 +22,7 @@ public class Player {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")  // Opcjonalnie można określić nazwę kolumny, choć domyślnie jest to 'id'
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "first_name", nullable = false, length = 50)
@@ -41,14 +41,20 @@ public class Player {
     @Column(name = "height_inch", nullable = false, length = 10)
     private String heightInch;
 
+    @Column(name = "height_cm", nullable = false, length = 10)
+    private String heightCm;
+
     @Column(name = "weight_lbs", nullable = false, length = 10)
     private String weightLbs;
+
+    @Column(name = "weight_kg", nullable = false, length = 10)
+    private String weightKg;
 
     @Column(name = "country", nullable = false, length = 50)
     private String country;
 
-    @Column(name = "jersey_number", nullable = false)
-    private int jerseyNumber;
+    @Column(name = "hand", nullable = false)
+    private String hand;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
@@ -63,4 +69,7 @@ public class Player {
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private PlayerCareerStats playerCareerStats;
+
+
+
 }

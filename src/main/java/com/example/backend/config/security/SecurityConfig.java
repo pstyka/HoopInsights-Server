@@ -1,7 +1,6 @@
 package com.example.backend.config.security;
 
 import com.example.backend.auth.jwt.JwtAuthenticationFilter;
-import com.example.backend.auth.jwt.service.JwtService;
 import com.example.backend.auth.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,10 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -38,15 +33,17 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtService jwtService;
+    static final String API_KEY = "admin";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                //.addFilterBefore(new ApiKeyAuthFilter("API-Key"), JwtAuthenticationFilter.class)
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/v1/scraper/**",
                                 "/api/v1/auth/register/**",
                                 "/api/v1/auth/login/**",
                                 "/v2/api-docs",
@@ -59,26 +56,24 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/webjars/**",
                                 "/swagger-ui.html",
-                                "/oauth2/**",
-                                "/login/**",
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/api/v1/auth/oauth2/login")
-                        .defaultSuccessUrl("/home", true)
-                        .failureUrl("/api/v1/auth/oauth2/login?error=true")
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(this.oauth2UserService())
-                        )
-                        .successHandler((request, response, authentication) -> {
-                            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                            String jwtToken = jwtService.generateToken(oAuth2User);
-                            response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
-                            response.sendRedirect("/home");
-                        })
-                )
+                //.oauth2Login(oauth2 -> oauth2
+                //        .loginPage("/api/v1/auth/oauth2/login")
+                //        .defaultSuccessUrl("/home", true)
+                //        .failureUrl("/api/v1/auth/oauth2/login?error=true")
+                //        .userInfoEndpoint(userInfo -> userInfo
+                //                .userService(this.oauth2UserService())
+                //        )
+                //        .successHandler((request, response, authentication) -> {
+                //            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+                //            String jwtToken = jwtService.generateToken(oAuth2User);
+                //            response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
+                //            response.sendRedirect("/home");
+                //        })
+                //)
                 .userDetailsService(userDetailsServiceImpl)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -112,8 +107,8 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
-    @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-        return new DefaultOAuth2UserService();
-    }
+    //@Bean
+    //public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+    //    return new DefaultOAuth2UserService();
+    //}
 }

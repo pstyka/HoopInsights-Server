@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://HoopInsightsDB:5432/postgres
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -11,6 +11,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
 
   security:
     oauth2:
@@ -33,3 +36,14 @@ spring:
 jwt:
   secret: your_secret_key
   expiration: 3600000 # 1 hour in milliseconds
+
+logging:
+  level:
+    root: INFO
+    com.example.backend: DEBUG
+  file:
+    name: app.log
+    path: ./logs
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
