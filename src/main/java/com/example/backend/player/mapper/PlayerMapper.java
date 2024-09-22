@@ -15,7 +15,7 @@ public class PlayerMapper {
         player.setLastName(dto.getLastName());
         player.setPosition(dto.getPosition());
         player.setHand(dto.getHand());
-        player.setBirthDate(DATE_FORMAT.parse(dto.getBirthDate()));
+        player.setBirthDate(dto.getBirthDate());
         player.setHeightInch(dto.getHeightInch());
         player.setHeightCm(dto.getHeightCm());
         player.setWeightLbs(dto.getWeightLbs());

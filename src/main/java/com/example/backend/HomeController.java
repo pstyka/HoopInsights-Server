@@ -14,4 +14,7 @@ public class HomeController {
     public Map<String, Object> home(@AuthenticationPrincipal OAuth2User principal) {
         return principal.getAttributes();
     }
+
+
+
 }
