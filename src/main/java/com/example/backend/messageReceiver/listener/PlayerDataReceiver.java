@@ -19,7 +19,8 @@ public class PlayerDataReceiver {
 
     @Autowired
     private PlayerRepository playerRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private PlayerMapper PlayerMapper;
 
     @RabbitListener(queues = "player_queue")
     public void receiveMessage(Map<String, Object> playerData) {
@@ -41,7 +42,6 @@ public class PlayerDataReceiver {
             playerDTO.setWeightKg((String) playerData.get("weightKg"));
             playerDTO.setIsActive(Boolean.valueOf((String) playerData.get("isActive")));
 
-            // Mapowanie do encji
             Player player = PlayerMapper.playerDtoToPlayer(playerDTO);
             playerRepository.save(player);
         } catch (Exception e) {

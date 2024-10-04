@@ -73,7 +73,7 @@ public class PlayerApiService {
         List<PlayerApiResponseDTO.PlayerDTO> playersFromApi = getPlayersForTeam(season, teamApiId);
 
         for (PlayerApiResponseDTO.PlayerDTO playerDTO : playersFromApi) {
-            Optional<Player> existingPlayer = playerRepository.findByFirstNameAndLastName(playerDTO.getFirstname(), playerDTO.getLastname());
+            Optional<Player> existingPlayer = playerRepository.findByFirstNameAndLastNameIsLikeIgnoreCase(playerDTO.getFirstname(), playerDTO.getLastname());
 
             Player player;
             if (existingPlayer.isPresent()) {
@@ -141,8 +141,8 @@ public class PlayerApiService {
             List<Integer> teamIds = teamsService.getTeamApiIds();
             for(Integer teamId : teamIds){
 
-                    Thread.sleep(5000);
-                    savePlayersForTeam(year, teamId);
+                Thread.sleep(5000);
+                savePlayersForTeam(year, teamId);
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

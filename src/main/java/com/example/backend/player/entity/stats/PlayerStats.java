@@ -2,13 +2,17 @@ package com.example.backend.player.entity.stats;
 
 import com.example.backend.player.entity.Player;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+
 @Getter
 @Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "player_stats")
 public abstract class PlayerStats {
 
