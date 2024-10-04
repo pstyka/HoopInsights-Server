@@ -6,6 +6,7 @@ import com.example.backend.team.mapper.TeamAbbAndNameMapper;
 import com.example.backend.team.service.TeamsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,12 @@ public class TeamScraperController {
     private final TeamsService teamsService;
     private final TeamAbbAndNameMapper teamAbbAndNameMapper;
 
+
+    @Value("${flask.base-url}")
+    private String flaskBaseUrl;
     @GetMapping("/scrape-teams")
     public ResponseEntity<String> scrapeTeams() {
-        String flaskUrl = "http://flask-service:5000/scrape-teams";
+        String flaskUrl = flaskBaseUrl + "/scrape-teams";
         try {
             ResponseEntity<TeamAbbAndNameDTO[]> response = restTemplate.postForEntity(flaskUrl, null, TeamAbbAndNameDTO[].class);
             TeamAbbAndNameDTO[] teams = response.getBody();

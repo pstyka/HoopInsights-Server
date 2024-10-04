@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper
 public interface TeamMapper {
 
-    Team teamDtoToTeam(TeamApiResponseDTO.TeamDTO teamAbbAndNameDTO);
+    Team teamDtoToTeam(TeamApiResponseDTO.TeamDTO teamDTO);
 
     TeamApiResponseDTO.TeamDTO teamToTeamDto(Team team);
 }

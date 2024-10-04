@@ -52,3 +52,6 @@ api:
   rapidapi:
     host: api-nba-v1.p.rapidapi.com
     key: f4d8255382msh2c161a373f530e6p157b0ajsn9a01cce6f434
+
+flask:
+  base-url: http://flask-service:5000
