@@ -25,36 +25,42 @@ public class Player {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "api_id")
+    private Long apiId;
+
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    @Column(name = "position", nullable = false, length = 20)
+    @Column(name = "position")
     private String position;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "birth_date", nullable = false)
     private Date birthDate;
 
-    @Column(name = "height_inch", nullable = false, length = 10)
+    @Column(name = "height_inch", length = 10)
     private String heightInch;
 
-    @Column(name = "height_cm", nullable = false, length = 10)
+    @Column(name = "height_cm", length = 10)
     private String heightCm;
 
-    @Column(name = "weight_lbs", nullable = false, length = 10)
+    @Column(name = "weight_lbs", length = 10)
     private String weightLbs;
 
-    @Column(name = "weight_kg", nullable = false, length = 10)
+    @Column(name = "weight_kg", length = 10)
     private String weightKg;
 
     @Column(name = "country", nullable = false, length = 50)
     private String country;
 
-    @Column(name = "hand", nullable = false)
+    @Column(name = "hand")
     private String hand;
+
+    @Column(name = "jersey_number", nullable = false, length = 3)
+    private String jerseyNumber;
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;

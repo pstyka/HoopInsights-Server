@@ -17,7 +17,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String City;
+    private String abb;
+    private String city;
+    private String logoUrl;
+    private Integer apiId;
 
     @ManyToOne
     @JoinColumn(name = "division_id")

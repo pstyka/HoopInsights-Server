@@ -47,3 +47,8 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+api:
+  rapidapi:
+    host: api-nba-v1.p.rapidapi.com
+    key: f4d8255382msh2c161a373f530e6p157b0ajsn9a01cce6f434
