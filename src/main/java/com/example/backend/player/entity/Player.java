@@ -36,7 +36,7 @@ public class Player {
     private String position;
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private Date birthDate;
 
     @Column(name = "height_inch", length = 10)
@@ -51,16 +51,22 @@ public class Player {
     @Column(name = "weight_kg", length = 10)
     private String weightKg;
 
-    @Column(name = "country", nullable = false, length = 50)
+    @Column(name = "country", length = 50)
     private String country;
 
     @Column(name = "hand")
     private String hand;
 
-    @Column(name = "jersey_number", nullable = false, length = 3)
+    @Column(name = "jersey_number")
     private String jerseyNumber;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(name = "draft")
+    private String draft;
+
+    @Column(name = "photo_url")
+    private String photoUrl;
+
+    @Column(name = "is_active")
     private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,50 +2,111 @@ package com.example.backend.messageReceiver.listener;
 
 import com.example.backend.player.dto.PlayerDTO;
 import com.example.backend.player.entity.Player;
-import com.example.backend.player.mapper.PlayerMapper;
 import com.example.backend.player.repository.PlayerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class PlayerDataReceiver {
 
     @Autowired
     private PlayerRepository playerRepository;
     @Autowired
-    private PlayerMapper PlayerMapper;
+    private ObjectMapper objectMapper;
 
     @RabbitListener(queues = "player_queue")
-    public void receiveMessage(Map<String, Object> playerData) {
+    public void receiveMessage(@Payload PlayerDTO playerDTO) {
         try {
-            PlayerDTO playerDTO = new PlayerDTO();
-            playerDTO.setFirstName((String) playerData.get("firstName"));
-            playerDTO.setLastName((String) playerData.get("lastName"));
-            playerDTO.setPosition((String) playerData.get("position"));
-            playerDTO.setHand((String) playerData.get("hand"));
+            log.info("Message received: " + playerDTO);
 
-            String birthDateStr = (String) playerData.get("birthDate");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd,yyyy");
-            Date birthDate = dateFormat.parse(birthDateStr);
-            playerDTO.setBirthDate(birthDate);
+            Optional<Player> existingPlayer = playerRepository
+                    .findByFirstNameAndLastNameIsLikeIgnoreCase(playerDTO.getFirstName(), playerDTO.getLastName());
 
-            playerDTO.setHeightInch((String) playerData.get("heightInch"));
-            playerDTO.setHeightCm((String) playerData.get("heightCm"));
-            playerDTO.setWeightLbs((String) playerData.get("weightLbs"));
-            playerDTO.setWeightKg((String) playerData.get("weightKg"));
-            playerDTO.setIsActive(Boolean.valueOf((String) playerData.get("isActive")));
-
-            Player player = PlayerMapper.playerDtoToPlayer(playerDTO);
-            playerRepository.save(player);
+            if (existingPlayer.isPresent()) {
+                log.info("Aktualizacja zawodnika: " + playerDTO.getFirstName() + " " + playerDTO.getLastName());
+                Player player = existingPlayer.get();
+                updatePlayer(player, playerDTO);
+                playerRepository.save(player);
+            } else {
+                log.info("Tworzenie nowego zawodnika: " + playerDTO.getFirstName() + " " + playerDTO.getLastName());
+                Player newPlayer = new Player();
+                updatePlayer(newPlayer, playerDTO);
+                playerRepository.save(newPlayer);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Błąd podczas przetwarzania wiadomości: ", e);
         }
     }
+
+
+    private void updatePlayer(Player player, PlayerDTO playerDTO) {
+        if (playerDTO.getFirstName() != null && !playerDTO.getFirstName().isEmpty()) {
+            player.setFirstName(playerDTO.getFirstName());
+        }
+        if (playerDTO.getLastName() != null && !playerDTO.getLastName().isEmpty()) {
+            player.setLastName(playerDTO.getLastName());
+        }
+        if (playerDTO.getHeightInch() != null && !playerDTO.getHeightInch().isEmpty()) {
+            player.setHeightInch(playerDTO.getHeightInch());
+        }
+        if (playerDTO.getHeightCm() != null && !playerDTO.getHeightCm().isEmpty()) {
+            player.setHeightCm(playerDTO.getHeightCm());
+        }
+        if (playerDTO.getWeightLbs() != null && !playerDTO.getWeightLbs().isEmpty()) {
+            player.setWeightLbs(playerDTO.getWeightLbs());
+        }
+        if (playerDTO.getWeightKg() != null && !playerDTO.getWeightKg().isEmpty()) {
+            player.setWeightKg(playerDTO.getWeightKg());
+        }
+        if (playerDTO.getCountry() != null && !playerDTO.getCountry().isEmpty()) {
+            player.setCountry(playerDTO.getCountry());
+        }
+        if (playerDTO.getBirthDate() != null) {
+            player.setBirthDate(playerDTO.getBirthDate());
+        }
+        if (playerDTO.getDraft() != null && !playerDTO.getDraft().isEmpty()) {
+            player.setDraft(playerDTO.getDraft());
+        }
+        if (playerDTO.getPhotoUrl() != null && !playerDTO.getPhotoUrl().isEmpty()) {
+            log.info("Setting photoUrl: " + playerDTO.getPhotoUrl());
+            player.setPhotoUrl(playerDTO.getPhotoUrl());
+        }
+        if (playerDTO.getJerseyNumber() != null && !playerDTO.getJerseyNumber().isEmpty()) {
+            player.setJerseyNumber(playerDTO.getJerseyNumber());
+        }
+
+
+        if (player.getTeam() != null) {
+            player.setTeam(player.getTeam());
+        }
+        if (player.getPlayerSeasonStats() != null) {
+            player.setPlayerSeasonStats(player.getPlayerSeasonStats());
+        }
+        if (player.getPlayerCareerStats() != null) {
+            player.setPlayerCareerStats(player.getPlayerCareerStats());
+        }
+        if (player.getIsActive() != null) {
+            player.setIsActive(player.getIsActive());
+        }
+        if (player.getHand() != null) {
+            player.setHand(player.getHand());
+        }
+        if (player.getPosition() != null) {
+            player.setPosition(player.getPosition());
+        }
+        if (player.getApiId() != null) {
+            player.setApiId(player.getApiId());
+        }
+        if (player.getId() != null) {
+            player.setId(player.getId());
+        }
+    }
+
 }

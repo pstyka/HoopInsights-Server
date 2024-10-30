@@ -1,9 +1,12 @@
 package com.example.backend.team.entity;
 
 import com.example.backend.player.entity.Player;
+import com.example.backend.player.entity.salary.Salary;
+import com.example.backend.standings.entity.TeamStandings;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,4 +36,9 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<Player> players;
 
+    @OneToMany(mappedBy = "team")
+    private List<Salary> salaries;
+
+    @OneToOne(mappedBy = "team", cascade = CascadeType.ALL)
+    private TeamStandings teamStandings;
 }

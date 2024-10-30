@@ -84,7 +84,7 @@ public class TeamsApiService {
                 if (team != null) {
                     team.setName(updatedTeamData.getName());
                     team.setCity(updatedTeamData.getCity());
-                    team.setLogoUrl(updatedTeamData.getLogo());
+                    team.setLogoUrl(updatedTeamData.getLogoUrl());
                     team.setApiId(updatedTeamData.getId());
 
                     teamRepository.save(team);
@@ -107,7 +107,7 @@ public class TeamsApiService {
            if(team != null){
                team.setName(teamData.getName());
                team.setCity(teamData.getCity());
-               team.setLogoUrl(teamData.getLogo());
+               team.setLogoUrl(teamData.getLogoUrl());
                team.setApiId(teamData.getId());
 
                teamRepository.save(team);
@@ -123,10 +123,10 @@ public class TeamsApiService {
         if (teams != null) {
             for (TeamApiResponseDTO.TeamDTO teamDTO : teams) {
                 Team team = new Team();
-                team.setAbb(teamDTO.getCode());
+                team.setAbb(teamDTO.getAbb());
                 team.setName(teamDTO.getName());
                 team.setCity(teamDTO.getCity());
-                team.setLogoUrl(teamDTO.getLogo());
+                team.setLogoUrl(teamDTO.getLogoUrl());
                 team.setApiId(teamDTO.getId());
 
                 teamRepository.save(team);

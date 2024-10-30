@@ -1,14 +1,12 @@
 package com.example.backend.team.controller;
 
 import com.example.backend.team.dto.TeamApiResponseDTO;
+import com.example.backend.team.dto.TeamViewDTO;
 import com.example.backend.team.mapper.TeamMapper;
 import com.example.backend.team.service.TeamsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +26,11 @@ public class TeamController {
                                                       @RequestParam(required = false) String division) {
         log.debug("**********| Get all teams |*************");
         return teamsService.getAllTeams().stream().map(teamMapper::teamToTeamDto).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{teamId}")
+    public TeamViewDTO getTeamById(@PathVariable Long teamId) {
+        return teamsService.getTeamById(teamId);
     }
 
 }

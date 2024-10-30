@@ -13,8 +13,20 @@ public class PlayerScraperController {
     private final PlayerScrapingService playerScrapingService;
 
     @PostMapping("/scrape-stats")
-    public ResponseEntity<String> scrapePlayersByLetter(@RequestParam String letter, @RequestParam String season) {
-        playerScrapingService.scrapeAndSavePlayers(letter,season);
-        return ResponseEntity.ok("Scraping and saving player stats for letter: "+ letter + " and season: " + season);
+    public ResponseEntity<String> scrapePlayersByLetter(@RequestParam String letter) {
+        playerScrapingService.scrapeAndSavePlayers(letter);
+        return ResponseEntity.ok("Scraping and saving player stats for letter: " + letter);
+    }
+
+    @PostMapping("/scrape-stats-for-all-players")
+    public ResponseEntity<String> scrapeSeasonStatsForAllActivePlayers(){
+        playerScrapingService.scrapeAndSaveAllPlayerStats();
+        return ResponseEntity.ok("Scraping and saving players stats was succesful");
+    }
+
+    @PostMapping("/scrape-players_nba_com")
+    public ResponseEntity<String>  scrapePlayers() {
+        playerScrapingService.scrapePlayersFromNbaCom();
+        return ResponseEntity.ok("Scraping from NBA.com was succesfully done!");
     }
 }
