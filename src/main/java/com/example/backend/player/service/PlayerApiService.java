@@ -117,7 +117,7 @@ public class PlayerApiService {
             if (playerDTO.getLeagues() != null && playerDTO.getLeagues().getStandard() != null) {
                 player.setJerseyNumber(playerDTO.getLeagues().getStandard().getJersey() != null
                         ? playerDTO.getLeagues().getStandard().getJersey()
-                        : null);
+                        : "");
                 player.setIsActive(playerDTO.getLeagues().getStandard().getActive() != null
                         ? playerDTO.getLeagues().getStandard().getActive()
                         : null);
@@ -125,7 +125,7 @@ public class PlayerApiService {
                         ? playerDTO.getLeagues().getStandard().getPos()
                         : null);
             } else {
-                player.setJerseyNumber(null);
+                player.setJerseyNumber("");
                 player.setIsActive(null);
                 player.setPosition(null);
             }
@@ -133,6 +133,7 @@ public class PlayerApiService {
             player.setTeam(team);
 
             playerRepository.save(player);
+
         }
     }
 
@@ -141,7 +142,7 @@ public class PlayerApiService {
             List<Integer> teamIds = teamsService.getTeamApiIds();
             for(Integer teamId : teamIds){
 
-                Thread.sleep(5000);
+                Thread.sleep(10000);
                 savePlayersForTeam(year, teamId);
             }
         } catch (InterruptedException e) {

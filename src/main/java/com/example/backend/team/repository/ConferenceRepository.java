@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ConferenceRepository extends JpaRepository<Conference, Long> {
     Optional<Conference> findByNameIgnoreCase(String name);
+
 }

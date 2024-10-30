@@ -22,5 +22,5 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
 
     List<Team> findByNameIsLikeIgnoreCaseAndConferenceIdAndDivisionId(String name, Long conferenceId, Long divisionId);
 
-
+    Optional<Team> findByName(String name);
 }

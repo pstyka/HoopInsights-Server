@@ -1,7 +1,9 @@
 package com.example.backend.team.service;
 
+import com.example.backend.player.dto.PlayerDTO;
 import com.example.backend.team.dto.TeamAbbAndNameDTO;
 import com.example.backend.team.dto.TeamApiResponseDTO;
+import com.example.backend.team.dto.TeamViewDTO;
 import com.example.backend.team.entity.Conference;
 import com.example.backend.team.entity.Division;
 import com.example.backend.team.entity.Team;
@@ -53,8 +55,29 @@ public class TeamsService {
         return teamRepository.findAll().stream().map(Team::getApiId).collect(Collectors.toList());
     }
 
-    public Team getTeamById(Long id) {
-        return teamRepository.findById(id).orElse(null);
+    public TeamViewDTO getTeamById(Long id) {
+        Team team = teamRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        return TeamViewDTO.builder()
+                .id(team.getId())
+                .name(team.getName())
+                .logoUrl(team.getLogoUrl())
+                .abb(team.getAbb())
+                .city(team.getCity())
+                .conferenceName(team.getConference() != null ? team.getConference().getName() : null)
+                .divisionName(team.getDivision() != null ? team.getDivision().getName() : null)
+                .players(team.getPlayers().stream()
+                        .map(player -> PlayerDTO.builder()
+                                .id(player.getId())
+                                .firstName(player.getFirstName())
+                                .lastName(player.getLastName())
+                                .position(player.getPosition())
+                                .heightInch(player.getHeightInch())
+                                .weightLbs(player.getWeightLbs())
+                                .birthDate(player.getBirthDate())
+                                .build()
+                        ).collect(Collectors.toSet()))
+                .build();
+
     }
 
     public List<TeamApiResponseDTO.TeamDTO> getTeams(String name, String conferenceName, String divisionName) {

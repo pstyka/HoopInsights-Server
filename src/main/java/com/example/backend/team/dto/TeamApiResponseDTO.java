@@ -68,9 +68,9 @@ public class TeamApiResponseDTO {
         private Integer id;
         private String name;
         private String nickname;
-        private String code;
+        private String abb;
         private String city;
-        private String logo;
+        private String logoUrl;
         private boolean allStar;
         private boolean nbaFranchise;
         private Leagues leagues;
@@ -102,12 +102,12 @@ public class TeamApiResponseDTO {
             this.nickname = nickname;
         }
 
-        public String getCode() {
-            return code;
+        public String getAbb() {
+            return abb;
         }
 
-        public void setCode(String code) {
-            this.code = code;
+        public void setAbb(String abb) {
+            this.abb = abb;
         }
 
         public String getCity() {
@@ -118,12 +118,12 @@ public class TeamApiResponseDTO {
             this.city = city;
         }
 
-        public String getLogo() {
-            return logo;
+        public String getLogoUrl() {
+            return logoUrl;
         }
 
-        public void setLogo(String logo) {
-            this.logo = logo;
+        public void setLogoUrl(String logoUrl) {
+            this.logoUrl = logoUrl;
         }
 
         public boolean isAllStar() {
