@@ -38,7 +38,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                //.addFilterBefore(new ApiKeyAuthFilter("API-Key"), JwtAuthenticationFilter.class)
                 .cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
@@ -47,6 +46,7 @@ public class SecurityConfig {
                                 "/api/v1/team-standings/**",
                                 "/api/v1/teams/**",
                                 "/api/v1/players/**",
+                                "/api/v1/shoes/**",
                                 "/api/v1/auth/register/**",
                                 "/api/v1/auth/login/**",
                                 "/v2/api-docs",
@@ -63,20 +63,6 @@ public class SecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-                //.oauth2Login(oauth2 -> oauth2
-                //        .loginPage("/api/v1/auth/oauth2/login")
-                //        .defaultSuccessUrl("/home", true)
-                //        .failureUrl("/api/v1/auth/oauth2/login?error=true")
-                //        .userInfoEndpoint(userInfo -> userInfo
-                //                .userService(this.oauth2UserService())
-                //        )
-                //        .successHandler((request, response, authentication) -> {
-                //            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                //            String jwtToken = jwtService.generateToken(oAuth2User);
-                //            response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken);
-                //            response.sendRedirect("/home");
-                //        })
-                //)
                 .userDetailsService(userDetailsServiceImpl)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -109,9 +95,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
-
-    //@Bean
-    //public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-    //    return new DefaultOAuth2UserService();
-    //}
 }
