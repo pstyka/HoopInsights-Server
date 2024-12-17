@@ -1,18 +1,23 @@
 package com.example.backend.player.service;
 
+import com.example.backend.team.dto.TeamAbbAndNameDTO;
+import com.example.backend.team.service.TeamsService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import java.sql.Time;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+
 public class PlayerScrapingService {
 
     @Value("${flask.base-url}")
@@ -20,10 +25,14 @@ public class PlayerScrapingService {
 
     private final RestTemplate restTemplate;
     private final RabbitTemplate rabbitTemplate;
+    private final TeamsService teamsService;
 
-    public PlayerScrapingService(RestTemplate restTemplate, RabbitTemplate rabbitTemplate) {
+    private Logger logger;
+
+    public PlayerScrapingService(RestTemplate restTemplate, RabbitTemplate rabbitTemplate, TeamsService teamsService) {
         this.restTemplate = restTemplate;
         this.rabbitTemplate = rabbitTemplate;
+        this.teamsService = teamsService;
     }
 
     public void scrapeAndSavePlayers(String letter) {
@@ -40,6 +49,27 @@ public class PlayerScrapingService {
         } catch (Exception e) {
             throw new RuntimeException("Error during scraping: " + e.getMessage());
         }
+    }
+
+   // @Async
+    public void scrapeThisSeasonStats() {
+        String letters = "abcdefghijklmnopqrstuwvxyz";
+        for (String l: letters.split("")) {
+            String url = flaskBaseUrl + "/scrape-this-season-stats/" + l;
+            try {
+                ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+
+                    System.out.println("Scraping triggered successfully in Flask.");
+                } else {
+                    throw new RuntimeException("Failed to trigger scraping in Flask");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error during scraping: " + e.getMessage());
+            }
+        }
+        //logger.info("All scraping requests have been triggered.");
     }
 
     public void scrapeAndSaveAllPlayerStats() {
@@ -74,8 +104,37 @@ public class PlayerScrapingService {
                 throw new RuntimeException("Failed to trigger scraping in Flask. Status code: " + response.getStatusCode());
             }
         } catch (Exception e) {
-            // Obsługa wyjątków, gdy coś poszło nie tak
             throw new RuntimeException("Error during scraping players: " + e.getMessage());
+        }
+    }
+
+    public void scrapeSalariesFromBasketballReferenceCom() throws InterruptedException {
+        List<String> teamAbbs = teamsService.getTeamsAbbList().stream().map(TeamAbbAndNameDTO::getAbb).toList();
+        for(String abb : teamAbbs) {
+            String url = flaskBaseUrl + "/scrape-salaries/" + abb;
+            try {
+                ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    System.out.println("Scraping triggered successfully in Flask.");
+                } else {
+                    throw new RuntimeException("Failed to trigger scraping in Flask. Status code: " + response.getStatusCode());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error during scraping salaries: " + e.getMessage());
+            }
+            Thread.sleep(7000);
+        }
+    }
+
+    public String scrapeThisSeasonStatsForPlayers() {
+        String flaskUrl = "http://flask-serivce:5000/scrape-this-season-stats-for-player";
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(flaskUrl, null, String.class);
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Error while scraping stats: " + e.getMessage(), e);
         }
     }
 

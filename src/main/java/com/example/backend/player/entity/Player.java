@@ -1,5 +1,7 @@
 package com.example.backend.player.entity;
 
+import com.example.backend.injury.entity.Injury;
+import com.example.backend.player.entity.salary.Salary;
 import com.example.backend.player.entity.stats.PlayerCareerStats;
 import com.example.backend.player.entity.stats.PlayerSeasonStats;
 import com.example.backend.shoe.entity.Shoe;
@@ -82,11 +84,14 @@ public class Player {
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private PlayerCareerStats playerCareerStats;
 
-    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ShoeHistory> shoeHistory = new ArrayList<>();
-
     @ManyToOne
     @JoinColumn(name = "current_shoe_id")
     private Shoe currentShoe;
+
+    @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
+    private List<Injury> injuries;
+
+    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Salary salary;
 
 }

@@ -23,6 +23,21 @@ public class RabbitMQConfig {
     public Queue playerShoeQueue() {
         return new Queue("playerShoeQueue", true);
     }
+
+    @Bean
+    public Queue injuryQueue() {
+        return new Queue("playerInjuryQueue", true);
+    }
+    @Bean
+    public Queue statsQueue() {
+        return new Queue("playerStatsQueue", true);
+    }
+
+    @Bean
+    public Queue salaryQueue() {
+        return new Queue("salaryQueue", true);
+    }
+
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

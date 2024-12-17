@@ -1,11 +1,15 @@
 package com.example.backend.player.controller;
 
 import com.example.backend.player.dto.PlayerDTO;
+import com.example.backend.player.dto.PlayerShoeDTO;
 import com.example.backend.player.service.PlayerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,6 +38,12 @@ public class PlayerController {
     public PlayerDTO getPlayerById(@PathVariable Long id) {
         log.debug("Get player by id: {}", id);
         return playerService.getPlayerById(id).orElseThrow(() -> new RuntimeException("Player not found"));
+    }
+
+    @GetMapping("/get-players-with-shoes")
+    public ResponseEntity<List<PlayerShoeDTO>> getPlayersWithAssignedShoes() {
+        List<PlayerShoeDTO> players = playerService.getPlayersWithAssignedShoes();
+        return ResponseEntity.ok(players);
     }
 
 }

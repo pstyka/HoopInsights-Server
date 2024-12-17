@@ -3,10 +3,7 @@ package com.example.backend.messageReceiver.listener;
 import com.example.backend.player.entity.Player;
 import com.example.backend.player.repository.PlayerRepository;
 import com.example.backend.shoe.dto.PlayerShoeDataDTO;
-import com.example.backend.shoe.dto.ShoeHistoryDTO;
 import com.example.backend.shoe.entity.Shoe;
-import com.example.backend.shoe.entity.ShoeHistory;
-import com.example.backend.shoe.repository.ShoeHistoryRepository;
 import com.example.backend.shoe.repository.ShoeRepository;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
@@ -24,9 +21,6 @@ public class PlayerShoesReceiver {
     private PlayerRepository playerRepository;
 
     @Autowired
-    private ShoeHistoryRepository shoeHistoryRepository;
-
-    @Autowired
     private TeamRepository teamRepository;
 
     @Autowired
@@ -34,40 +28,46 @@ public class PlayerShoesReceiver {
 
     @RabbitListener(queues = "playerShoeQueue")
     @Transactional
-    public void receivePlayerShoeData(PlayerShoeDataDTO playerShoeData) {
-        System.out.println("Odebrano dane zawodnika: " + playerShoeData);
+    public void receivePlayerShoeData(PlayerShoeDataDTO playerShoeDTO) {
+        System.out.println("Odebrano dane zawodnika: " + playerShoeDTO);
 
+        // Znalezienie lub utworzenie gracza
         Optional<Player> playerOpt = playerRepository.findByFirstNameAndLastNameIsLikeIgnoreCase(
-                playerShoeData.getFirstName(), playerShoeData.getLastName());
+                playerShoeDTO.getFirstName(), playerShoeDTO.getLastName());
 
         Player player = playerOpt.orElseGet(() -> {
-            System.out.println("Tworzenie nowego zawodnika: " + playerShoeData.getFirstName() + " " + playerShoeData.getLastName());
+            System.out.println("Tworzenie nowego zawodnika: " + playerShoeDTO.getFirstName() + " " + playerShoeDTO.getLastName());
             Player newPlayer = new Player();
-            newPlayer.setFirstName(playerShoeData.getFirstName());
-            newPlayer.setLastName(playerShoeData.getLastName());
+            newPlayer.setFirstName(playerShoeDTO.getFirstName());
+            newPlayer.setLastName(playerShoeDTO.getLastName());
             return playerRepository.save(newPlayer);
         });
 
-        String teamName = playerShoeData.getTeamName();
-        Team team = teamRepository.findByName(teamName)
-                .orElseGet(() -> {
-                    System.out.println("Tworzenie nowej drużyny: " + teamName);
-                    Team newTeam = new Team();
-                    newTeam.setName(teamName);
-                    return teamRepository.save(newTeam);
-                });
+        // Ustawienie drużyny zawodnika, jeśli jest dostępna
+        String teamName = playerShoeDTO.getTeamName();
+        if (teamName != null) {
+            Team team = teamRepository.findByName(teamName)
+                    .orElseGet(() -> {
+                        System.out.println("Tworzenie nowej drużyny: " + teamName);
+                        Team newTeam = new Team();
+                        newTeam.setName(teamName);
+                        return teamRepository.save(newTeam);
+                    });
 
-        if (player.getTeam() == null || !player.getTeam().equals(team)) {
-            player.setTeam(team);
+            if (player.getTeam() == null || !player.getTeam().equals(team)) {
+                player.setTeam(team);
+            }
         }
 
-        if (playerShoeData.getImageUrl() != null &&
-                !playerShoeData.getImageUrl().equals(player.getPhotoUrl())) {
-            player.setPhotoUrl(playerShoeData.getImageUrl());
+        // Aktualizacja zdjęcia zawodnika
+        if (playerShoeDTO.getImageUrl() != null &&
+                !playerShoeDTO.getImageUrl().equals(player.getPhotoUrl())) {
+            player.setPhotoUrl(playerShoeDTO.getImageUrl());
         }
-        // Ustawienie currentShoe
-        String currentShoeBrand = playerShoeData.getCurrentShoeBrand();
-        String currentShoeModel = playerShoeData.getCurrentShoeModel();
+
+        // Znalezienie lub utworzenie obecnego buta zawodnika
+        String currentShoeBrand = playerShoeDTO.getShoeBrand();
+        String currentShoeModel = playerShoeDTO.getShoeModel();
         Shoe currentShoe = shoeRepository.findByBrandAndModel(currentShoeBrand, currentShoeModel)
                 .orElseGet(() -> {
                     Shoe newShoe = new Shoe();
@@ -75,26 +75,12 @@ public class PlayerShoesReceiver {
                     newShoe.setModel(currentShoeModel);
                     return shoeRepository.save(newShoe);
                 });
+
         player.setCurrentShoe(currentShoe);
 
+        // Zapisanie danych zawodnika
         playerRepository.save(player);
 
-        for (ShoeHistoryDTO shoeHistoryDTO : playerShoeData.getShoeHistory()) {
-            Shoe shoe = shoeRepository.findByBrandAndModel(shoeHistoryDTO.getBrand(), shoeHistoryDTO.getModel())
-                    .orElseGet(() -> {
-                        Shoe newShoe = new Shoe();
-                        newShoe.setBrand(shoeHistoryDTO.getBrand());
-                        newShoe.setModel(shoeHistoryDTO.getModel());
-                        return shoeRepository.save(newShoe);
-                    });
-
-            ShoeHistory shoeHistory = new ShoeHistory();
-            shoeHistory.setPlayer(player);
-            shoeHistory.setShoe(shoe);
-            System.out.println("Ustawianie dateWorn: " + shoeHistoryDTO.getDateWorn());
-            shoeHistory.setDateWorn(shoeHistoryDTO.getDateWorn());
-
-            shoeHistoryRepository.save(shoeHistory);
-        }
+        System.out.println("Dane zawodnika zaktualizowane: " + player);
     }
 }

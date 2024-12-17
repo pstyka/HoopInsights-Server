@@ -10,7 +10,6 @@ public class TeamApiResponseDTO {
     private List<String> errors;
     private int results;
 
-    // Getters and Setters
     public String getGet() {
         return get;
     }

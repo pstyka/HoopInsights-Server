@@ -1,5 +1,6 @@
 package com.example.backend.player.dto;
 
+import com.example.backend.shoe.entity.Shoe;
 import lombok.*;
 
 import java.util.Date;
@@ -29,6 +30,7 @@ public class PlayerDTO {
     private Boolean isActive;
     private String teamName;
     private String teamLogoUrl;
+    private Shoe currentShoe;
 
 }
 

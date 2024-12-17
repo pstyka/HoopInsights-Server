@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TeamsApiService {
@@ -79,9 +80,10 @@ public class TeamsApiService {
             TeamApiResponseDTO.TeamDTO updatedTeamData = getTeamByAbbreviation(teamDTO.getAbb());
 
             if (updatedTeamData != null) {
-                Team team = teamRepository.findByAbb(teamDTO.getAbb());
+                Optional<Team> teamOpt = teamRepository.findByAbb(teamDTO.getAbb());
 
-                if (team != null) {
+                if (teamOpt.isPresent()) {
+                    Team team = new Team();
                     team.setName(updatedTeamData.getName());
                     team.setCity(updatedTeamData.getCity());
                     team.setLogoUrl(updatedTeamData.getLogoUrl());
@@ -102,9 +104,10 @@ public class TeamsApiService {
        TeamApiResponseDTO.TeamDTO teamData = getTeamByAbbreviation(abb);
 
        if(teamData != null){
-           Team team = teamRepository.findByAbb(abb);
+           Optional<Team> teamOpt = teamRepository.findByAbb(abb);
 
-           if(team != null){
+           if(teamOpt.isPresent()){
+               Team team = new Team();
                team.setName(teamData.getName());
                team.setCity(teamData.getCity());
                team.setLogoUrl(teamData.getLogoUrl());
