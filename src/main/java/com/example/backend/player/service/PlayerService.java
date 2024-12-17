@@ -1,9 +1,11 @@
 package com.example.backend.player.service;
 
 import com.example.backend.player.dto.PlayerDTO;
+import com.example.backend.player.dto.PlayerShoeDTO;
 import com.example.backend.player.entity.Player;
 import com.example.backend.player.mapper.PlayerMapper;
 import com.example.backend.player.repository.PlayerRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,9 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class PlayerService {
 
     @Autowired
@@ -83,5 +88,18 @@ public class PlayerService {
 
     private Page<Player> findPlayersByWeightLbs(String weight, Pageable pageable) {
         return playerRepository.findPlayersByWeightLbs(weight, pageable);
+    }
+
+    public List<PlayerShoeDTO> getPlayersWithAssignedShoes() {
+        List<Player> players = playerRepository.findByCurrentShoeIsNotNull();
+
+        return players.stream().map(player -> {
+            PlayerShoeDTO dto = new PlayerShoeDTO();
+            dto.setFirstName(player.getFirstName());
+            dto.setLastName(player.getLastName());
+            dto.setTeam(player.getTeam() != null ? player.getTeam().getName() : "Unknown Team");
+            dto.setShoeType(player.getCurrentShoe() != null ? player.getCurrentShoe().getType() : "Unknown Type");
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

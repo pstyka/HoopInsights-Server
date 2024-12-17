@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamRepository extends JpaRepository<Team,Long> {
-    Team findByAbb(String abb);
+    Optional<Team> findByAbb(String abb);
+
     Optional<Team> findByApiId(Integer apiId);
     List<Team> findByConferenceId(Long conferenceId);
     List<Team> findByDivisionId(Long divisionId);

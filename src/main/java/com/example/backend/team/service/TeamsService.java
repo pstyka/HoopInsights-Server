@@ -3,6 +3,7 @@ package com.example.backend.team.service;
 import com.example.backend.player.dto.PlayerDTO;
 import com.example.backend.team.dto.TeamAbbAndNameDTO;
 import com.example.backend.team.dto.TeamApiResponseDTO;
+import com.example.backend.team.dto.TeamDTO;
 import com.example.backend.team.dto.TeamViewDTO;
 import com.example.backend.team.entity.Conference;
 import com.example.backend.team.entity.Division;
@@ -31,6 +32,35 @@ public class TeamsService {
     private final ConferenceRepository conferenceRepository;
     private final DivisionRepository divisionRepository;
 
+    public List<TeamDTO> getTeams(String name, String conferenceName, String divisionName) {
+        List<Team> teams;
+
+        Optional<Conference> conferenceOptional = conferenceRepository.findByNameIgnoreCase(conferenceName);
+        Optional<Division> divisionOptional = divisionRepository.findByNameIgnoreCase(divisionName);
+
+        Long conferenceId = conferenceOptional.map(Conference::getId).orElse(null);
+        Long divisionId = divisionOptional.map(Division::getId).orElse(null);
+
+        if (StringUtils.hasText(name) && conferenceId == null && divisionId == null) {
+            teams = teamRepository.findByNameIsLikeIgnoreCase(name);
+        } else if (name == null && conferenceId != null && divisionId == null) {
+            teams = teamRepository.findByConferenceId(conferenceId);
+        } else if (name == null && conferenceId == null && divisionId != null) {
+            teams = teamRepository.findByDivisionId(divisionId);
+        } else if (StringUtils.hasText(name) && conferenceId != null && divisionId == null) {
+            teams = teamRepository.findByNameIsLikeIgnoreCaseAndConferenceId(name, conferenceId);
+        } else if (StringUtils.hasText(name) && conferenceId == null && divisionId != null) {
+            teams = teamRepository.findByNameIsLikeIgnoreCaseAndDivisionId(name, divisionId);
+        } else if (name == null && conferenceId != null) {
+            teams = teamRepository.findByConferenceIdAndDivisionId(conferenceId, divisionId);
+        } else if (StringUtils.hasText(name) && conferenceId != null && divisionId != null) {
+            teams = teamRepository.findByNameIsLikeIgnoreCaseAndConferenceIdAndDivisionId(name, conferenceId, divisionId);
+        } else {
+            teams = teamRepository.findAll();
+        }
+
+        return teams.stream().map(teamMapper::teamToTeamDto).collect(Collectors.toList());
+    }
     public void saveAllTeams(List<Team> teams) {
         teamRepository.saveAll(teams);
     }
@@ -80,61 +110,5 @@ public class TeamsService {
 
     }
 
-    public List<TeamApiResponseDTO.TeamDTO> getTeams(String name, String conferenceName, String divisionName) {
-        List<Team> teams = new ArrayList<>();
 
-        Optional<Conference> conferenceOptional = conferenceRepository.findByNameIgnoreCase(conferenceName);
-        Optional<Division> divisionOptional = divisionRepository.findByNameIgnoreCase(divisionName);
-
-        Long conferenceId = conferenceOptional.map(Conference::getId).orElse(null);
-        Long divisionId = divisionOptional.map(Division::getId).orElse(null);
-
-        if (StringUtils.hasText(name) && conferenceId == null && divisionId == null) {
-            teams = teamRepository.findByNameIsLikeIgnoreCase(name);
-        } else if (name == null && conferenceId != null && divisionId == null) {
-            teams = teamRepository.findByConferenceId(conferenceId);
-        } else if (name == null && conferenceId == null && divisionId != null) {
-            teams = teamRepository.findByDivisionId(divisionId);
-        } else if (StringUtils.hasText(name) && conferenceId != null && divisionId == null) {
-            teams = teamRepository.findByNameIsLikeIgnoreCaseAndConferenceId(name, conferenceId);
-        } else if (StringUtils.hasText(name) && conferenceId == null && divisionId != null) {
-            teams = teamRepository.findByNameIsLikeIgnoreCaseAndDivisionId(name, divisionId);
-        } else if (name == null && conferenceId != null && divisionId != null) {
-            teams = teamRepository.findByConferenceIdAndDivisionId(conferenceId, divisionId);
-        } else if (StringUtils.hasText(name) && conferenceId != null && divisionId != null) {
-            teams = teamRepository.findByNameIsLikeIgnoreCaseAndConferenceIdAndDivisionId(name, conferenceId, divisionId);
-        } else {
-            teams = teamRepository.findAll();
-        }
-
-        return teams.stream().map(teamMapper::teamToTeamDto).collect(Collectors.toList());
-    }
-
-    private List<Team> findTeamsByName(String name) {
-        return teamRepository.findByNameIsLikeIgnoreCase(name);
-    }
-
-    private List<Team> findTeamsByConference(Long conferenceId) {
-        return teamRepository.findByConferenceId(conferenceId);
-    }
-
-    private List<Team> findTeamsByDivision(Long divisionId) {
-        return teamRepository.findByDivisionId(divisionId);
-    }
-
-    private List<Team> findTeamsByNameAndConference(String name, Long conferenceId) {
-        return teamRepository.findByNameIsLikeIgnoreCaseAndConferenceId(name, conferenceId);
-    }
-
-    private List<Team> findTeamsByNameAndDivision(String name, Long divisionId) {
-        return teamRepository.findByNameIsLikeIgnoreCaseAndDivisionId(name, divisionId);
-    }
-
-    private List<Team> findTeamsByConferenceAndDivision(Long conferenceId, Long divisionId) {
-        return teamRepository.findByConferenceIdAndDivisionId(conferenceId, divisionId);
-    }
-
-    private List<Team> findTeamsByNameAndConferenceAndDivision(String name, Long conferenceId, Long divisionId) {
-        return teamRepository.findByNameIsLikeIgnoreCaseAndConferenceIdAndDivisionId(name, conferenceId, divisionId);
-    }
 }

@@ -1,13 +1,13 @@
 package com.example.backend.team.mapper;
 
-import com.example.backend.team.dto.TeamApiResponseDTO;
+import com.example.backend.team.dto.TeamDTO;
 import com.example.backend.team.entity.Team;
 import org.mapstruct.Mapper;
 
 @Mapper
 public interface TeamMapper {
 
-    Team teamDtoToTeam(TeamApiResponseDTO.TeamDTO teamDTO);
+    Team teamDtoToTeam(TeamDTO teamDTO);
 
-    TeamApiResponseDTO.TeamDTO teamToTeamDto(Team team);
+    TeamDTO teamToTeamDto(Team team);
 }
