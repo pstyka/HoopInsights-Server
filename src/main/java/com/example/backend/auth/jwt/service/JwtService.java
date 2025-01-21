@@ -21,7 +21,6 @@ import java.util.function.Function;
 public class JwtService {
 
     private final String SECRET_KEY = "724aaebf7f5ac4f24567005c12bc9b6e3f4e4a2f1ed7a075f43ef2b235e8c4e3";
-    private final UserRepository userRepository;
 
     public boolean isValid(String token, UserDetails user) {
         String username = extractUsername(token);
@@ -53,36 +52,27 @@ public class JwtService {
                 .getPayload();
     }
 
+
     public String generateToken(User user) {
-        return generateToken(user.getUsername());
-    }
-
-    public String generateToken(OAuth2User oAuth2User) {
-        return generateToken(oAuth2User.getName());
-    }
-
-    private String generateToken(String subject) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours validity
+        Date validity = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
         SecretKey key = getSigninKey();
 
         return Jwts.builder()
-                .claim("sub", subject)
+                .claim("sub", user.getUsername())
+                .claim("firstName", user.getFirstName())
+                .claim("lastName", user.getLastName())
                 .claim("iat", now)
                 .claim("exp", validity)
                 .signWith(key)
                 .compact();
     }
 
+
     private SecretKey getSigninKey() {
         byte[] keyBytes = Decoders.BASE64URL.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public UUID getUserIdFromToken(String token) {
-        String username = extractUsername(token);
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getId();
-    }
 }

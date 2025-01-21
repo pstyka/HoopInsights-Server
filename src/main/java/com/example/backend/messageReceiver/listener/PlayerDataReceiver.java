@@ -3,7 +3,6 @@ package com.example.backend.messageReceiver.listener;
 import com.example.backend.player.dto.PlayerDTO;
 import com.example.backend.player.entity.Player;
 import com.example.backend.player.repository.PlayerRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,6 @@ public class PlayerDataReceiver {
 
     @Autowired
     private PlayerRepository playerRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @RabbitListener(queues = "player_queue")
     public void receiveMessage(@Payload PlayerDTO playerDTO) {
@@ -88,9 +85,6 @@ public class PlayerDataReceiver {
         }
         if (player.getPlayerSeasonStats() != null) {
             player.setPlayerSeasonStats(player.getPlayerSeasonStats());
-        }
-        if (player.getPlayerCareerStats() != null) {
-            player.setPlayerCareerStats(player.getPlayerCareerStats());
         }
         if (player.getIsActive() != null) {
             player.setIsActive(player.getIsActive());

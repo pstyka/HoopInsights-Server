@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PlayerRepository extends JpaRepository<Player,Long> {
+    @Query("SELECT p FROM Player p JOIN FETCH p.salary s WHERE s IS NOT NULL")
+    List<Player> findAllWithSalaries();
 
     Optional<Player> findByFirstNameAndLastNameIsLikeIgnoreCase(String firstName, String lastName);
 
@@ -33,4 +36,6 @@ public interface PlayerRepository extends JpaRepository<Player,Long> {
 
     // Znajdź zawodników po wadze (lbs)
     Page<Player> findPlayersByWeightLbs(String weightLbs, Pageable pageable);
+
+    List<Player> findByCurrentShoeIsNotNull();
 }

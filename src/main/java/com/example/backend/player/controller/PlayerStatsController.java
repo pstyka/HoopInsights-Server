@@ -1,5 +1,6 @@
 package com.example.backend.player.controller;
 
+import com.example.backend.player.dto.BestPlayerForAnalysisDTO;
 import com.example.backend.player.dto.PlayerSeasonStatsDTO;
 import com.example.backend.player.service.PlayerStatsService;
 import org.springframework.http.ResponseEntity;
@@ -28,4 +29,13 @@ public class PlayerStatsController {
         }
         return ResponseEntity.ok(stats);
     }
+    @GetMapping("/this-season-stats")
+    public ResponseEntity<List<BestPlayerForAnalysisDTO>> getAllPlayerThisSeasonStats() {
+        List<BestPlayerForAnalysisDTO> stats = playerStatsService.getAllPlayerStatsForCurrentSeason();
+        if (stats.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(stats);
+    }
+
 }

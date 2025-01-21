@@ -1,4 +1,4 @@
-package com.example.backend.shoe.service;
+package com.example.backend.scraper.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
