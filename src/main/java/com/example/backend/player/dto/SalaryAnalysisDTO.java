@@ -10,6 +10,7 @@ public class SalaryAnalysisDTO {
 
     private String firstName;
     private String lastName;
+    private String position;
     private String teamName;
     private Integer salary;
     private PlayerSeasonStatsDTO seasonStats;

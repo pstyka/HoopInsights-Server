@@ -2,10 +2,8 @@ package com.example.backend.player.entity;
 
 import com.example.backend.injury.entity.Injury;
 import com.example.backend.player.entity.salary.Salary;
-import com.example.backend.player.entity.stats.PlayerCareerStats;
 import com.example.backend.player.entity.stats.PlayerSeasonStats;
 import com.example.backend.shoe.entity.Shoe;
-import com.example.backend.shoe.entity.ShoeHistory;
 import com.example.backend.team.entity.Team;
 import jakarta.persistence.*;
 import lombok.*;
@@ -81,8 +79,6 @@ public class Player {
     @OrderBy("season ASC")
     private List<PlayerSeasonStats> playerSeasonStats = new ArrayList<>();
 
-    @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PlayerCareerStats playerCareerStats;
 
     @ManyToOne
     @JoinColumn(name = "current_shoe_id")

@@ -1,9 +1,7 @@
-package com.example.backend.player.service;
+package com.example.backend.scraper.service;
 
 import com.example.backend.team.dto.TeamAbbAndNameDTO;
 import com.example.backend.team.service.TeamsService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.Time;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 
@@ -24,14 +20,11 @@ public class PlayerScrapingService {
     private String flaskBaseUrl;
 
     private final RestTemplate restTemplate;
-    private final RabbitTemplate rabbitTemplate;
     private final TeamsService teamsService;
 
-    private Logger logger;
 
-    public PlayerScrapingService(RestTemplate restTemplate, RabbitTemplate rabbitTemplate, TeamsService teamsService) {
+    public PlayerScrapingService(RestTemplate restTemplate, TeamsService teamsService) {
         this.restTemplate = restTemplate;
-        this.rabbitTemplate = rabbitTemplate;
         this.teamsService = teamsService;
     }
 
@@ -110,7 +103,7 @@ public class PlayerScrapingService {
 
     public void scrapeSalariesFromBasketballReferenceCom() throws InterruptedException {
         List<String> teamAbbs = teamsService.getTeamsAbbList().stream().map(TeamAbbAndNameDTO::getAbb).toList();
-        for(String abb : teamAbbs) {
+        for (String abb : teamAbbs) {
             String url = flaskBaseUrl + "/scrape-salaries/" + abb;
             try {
                 ResponseEntity<String> response = restTemplate.postForEntity(url, null, String.class);

@@ -5,7 +5,6 @@ import com.example.backend.player.entity.Player;
 import com.example.backend.player.entity.salary.Salary;
 import com.example.backend.player.repository.PlayerRepository;
 import com.example.backend.player.repository.salary.SalaryRepository;
-import com.example.backend.shoe.dto.PlayerShoeDataDTO;
 import com.example.backend.team.entity.Team;
 import com.example.backend.team.repository.TeamRepository;
 import lombok.AllArgsConstructor;
@@ -49,8 +48,6 @@ public class SalaryDataReceiver {
                     .build();
             salaryRepository.save(salary);
         }
-
-
 
         System.out.println("Saved salary data for player: " + player.getFirstName() + " " + player.getLastName());
     }

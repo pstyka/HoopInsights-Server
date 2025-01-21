@@ -12,7 +12,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -30,7 +29,7 @@ public class PlayerInjuryReceiver {
     @RabbitListener(queues = "playerInjuryQueue")
     @Transactional
     public void receiveInjuryData(PlayerInjuryDTO injuryData) {
-        System.out.println("Injury report reveived: " + injuryData);
+        System.out.println("Injury report received: " + injuryData);
 
         Optional<Player> playerOpt = playerRepository.findByFirstNameAndLastNameIsLikeIgnoreCase(
                 injuryData.getFirstName(), injuryData.getLastName());
@@ -45,11 +44,12 @@ public class PlayerInjuryReceiver {
         String abb = injuryData.getAbb();
         Optional<Team> team = teamRepository.findByAbb(abb);
 
-
-        if (player.getTeam() == null || !player.getTeam().equals(team)) {
-            player.setTeam(team.get());
-            playerRepository.save(player);
-            System.out.println("Zaktualizowano drużynę gracza na: " + abb);
+        if (team.isPresent()) {
+            if (player.getTeam() == null || !player.getTeam().equals(team.get())) {
+                player.setTeam(team.get());
+                playerRepository.save(player);
+                System.out.println("Updated player team: " + abb);
+            }
         }
 
         Injury injury = new Injury();
@@ -60,6 +60,6 @@ public class PlayerInjuryReceiver {
         injury.setInjuryStatus(injuryData.getInjuryStatus());
 
         injuryRepository.save(injury);
-        System.out.println("Uraz zapisany w bazie: " + injury);
+        System.out.println("Injury saved in database: " + injury);
     }
 }

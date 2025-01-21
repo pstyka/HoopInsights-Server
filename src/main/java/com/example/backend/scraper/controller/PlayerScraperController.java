@@ -1,6 +1,6 @@
-package com.example.backend.player.controller;
+package com.example.backend.scraper.controller;
 
-import com.example.backend.player.service.PlayerScrapingService;
+import com.example.backend.scraper.service.PlayerScrapingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

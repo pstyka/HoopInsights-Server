@@ -1,7 +1,7 @@
-package com.example.backend.shoe.controller;
+package com.example.backend.scraper.controller;
 
 
-import com.example.backend.shoe.service.ShoeScraperService;
+import com.example.backend.scraper.service.ShoeScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

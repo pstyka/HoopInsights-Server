@@ -33,18 +33,15 @@ public class PlayerSalaryService {
 
         return playersWithSalaries.stream()
                 .map(player -> {
-                    // Pobieranie statystyk sezonu 2024-25
                     PlayerSeasonStats seasonStats2024_25 = player.getPlayerSeasonStats().stream()
                             .filter(stats -> "2024-25".equals(stats.getSeason()))
                             .findFirst()
                             .orElse(null);
 
-                    // Jeśli gracz nie ma statystyk, pomijamy go
                     if (seasonStats2024_25 == null) {
                         return null;
                     }
 
-                    // Mapowanie PlayerSeasonStats na PlayerSeasonStatsDTO
                     PlayerSeasonStatsDTO seasonStatsDTO = PlayerSeasonStatsDTO.builder()
                             .season(seasonStats2024_25.getSeason())
                             .gamesPlayed(seasonStats2024_25.getGamesPlayed())
@@ -92,12 +89,12 @@ public class PlayerSalaryService {
                             .firstName(player.getFirstName())
                             .lastName(player.getLastName())
                             .teamName(player.getTeam().getName())
+                            .position(player.getPosition())
                             .salary(player.getSalary() != null ? player.getSalary().getSalary() : null)
                             .seasonStats(seasonStatsDTO)
                             .standings(teamStandingsDTO)
                             .build();
                 })
-                // Filtrujemy graczy, którzy nie mają statystyk lub wynagrodzenia
                 .filter(dto -> dto != null && dto.getSalary() != null)
                 .collect(Collectors.toList());
     }
